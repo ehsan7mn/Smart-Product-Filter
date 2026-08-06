@@ -6,28 +6,16 @@ class SPF_Filter_Frontend {
     public static function init() {
         add_action( 'wp_enqueue_scripts', [ __CLASS__, 'enqueue_assets' ] );
         add_action( 'wp_footer',          [ __CLASS__, 'render_modal' ] );
-        add_action( 'woocommerce_product_query', [ __CLASS__, 'limit_products_by_admin_terms' ] );
     }
 
-public static function limit_products_by_admin_terms( $q ) {
-    if ( ! $q->is_main_query() ) return;
-    if ( ! ( is_shop() || is_product_category() || is_product_tag() || is_tax() ) ) return;
-
-    $options      = SPF_Admin_Settings::get_options();
-    $allowed_cats = array_map( 'urldecode', $options['taxonomy_terms']['product_cat'] ?? [] );
-
-    if ( empty( $allowed_cats ) ) return;
-
-    $q->set( 'tax_query', [
-        [
-            'taxonomy'         => 'product_cat',
-            'field'            => 'slug',
-            'terms'            => $allowed_cats,
-            'operator'         => 'IN',
-            'include_children' => false,
-        ]
-    ]);
-}
+    // توجه: قبلاً اینجا یه متد limit_products_by_admin_terms() بود که با هوک
+    // woocommerce_product_query، همون taxonomy_terms['product_cat'] (که فقط قراره
+    // تعیین کنه کدوم دسته‌ها توی سایدبار چک‌باکس بشن) رو برای محدود کردن کل query
+    // محصولات توی همه‌ی آرشیوها هم استفاده می‌کرد. این یه باگ طراحی بود: هر دسته‌ای
+    // که از سایدبار تیکش برداشته می‌شد، محصولاتش توی آرشیو خودش هم گم می‌شد.
+    // این دو تا کاربرد باید کاملاً مستقل باشن، پس این محدودسازی حذف شد.
+    // taxonomy_terms['product_cat'] الان فقط توی filter-sidebar.php برای انتخاب
+    // ترم‌های قابل‌نمایش توی سایدبار استفاده می‌شه و هیچ اثری روی خود query نداره.
 
     private static function is_filter_page() {
         return is_shop() || is_product_category() || is_product_tag() || is_tax();
