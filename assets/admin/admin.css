@@ -1,0 +1,100 @@
+.spf-tax-group {
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    overflow: hidden;
+}
+
+.spf-tax-parent {
+    background: #f9f9f9;
+    padding: 10px 14px !important;
+    margin: 0 !important;
+}
+
+.spf-toggle-arrow {
+    margin-right: auto;
+    font-size: 11px;
+    transition: transform 0.2s;
+    color: #999;
+}
+
+.spf-toggle-arrow.open {
+    transform: rotate(180deg);
+}
+
+.spf-term-list {
+    display: none;
+    padding: 8px 14px 12px 14px;
+    border-top: 1px solid #eee;
+}
+
+.spf-term-list.open {
+    display: block;
+}
+
+.spf-term-all {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+    margin-bottom: 4px;
+}
+
+.spf-term-item {
+    padding-right: 16px !important;
+}
+.spf-term-list {
+    display: none;
+}
+
+.spf-term-list.open {
+    display: block;
+}
+
+.spf-term-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 0;
+}
+
+.spf-term-depth-0 {
+    padding-right: 0;
+}
+
+.spf-term-depth-1 {
+    padding-right: 16px;
+}
+
+.spf-term-depth-2 {
+    padding-right: 32px;
+}
+
+.spf-term-depth-3 {
+    padding-right: 48px;
+}
+.spf-tax-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    align-items: start;
+}
+
+.spf-tax-group {
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.spf-tax-suboption {
+    padding: 6px 14px;
+    background: #fcfcfc;
+    border-top: 1px solid #f0f0f0;
+}
+
+.spf-tax-suboption label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #777;
+    cursor: pointer;
+}
