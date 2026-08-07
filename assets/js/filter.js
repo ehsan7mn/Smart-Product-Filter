@@ -230,10 +230,19 @@ jQuery(function ($) {
             nonce:     spfData.nonce,
             orderby:   state.orderby,
             paged:     state.paged,
-            min_price: state.min_price,
-            max_price: state.max_price,
             page_url:  spfData.page_url,
         };
+
+        // فیلتر قیمت فقط وقتی ارسال می‌شه که کاربر واقعاً بازه رو از مقدار پیش‌فرض
+        // (کمینه/بیشینه‌ی کل سایت) تغییر داده باشه. اگه همیشه ارسال بشه، سمت PHP
+        // یه BETWEEN روی متای _price اجرا می‌کنه که محصولات بدون قیمت (مثلاً «تماس
+        // بگیرید») رو از هر نتیجه‌ی AJAX (حتی صرفاً سورت یا فیلتر تاکسونومی) حذف می‌کنه.
+        if (state.min_price !== parseInt(spfData.min_price)) {
+            data.min_price = state.min_price;
+        }
+        if (state.max_price !== parseInt(spfData.max_price)) {
+            data.max_price = state.max_price;
+        }
 
         Object.keys(state.filters).forEach(tax => {
             if (state.filters[tax] && state.filters[tax].length > 0) {
