@@ -22,6 +22,29 @@ define( 'SPF_PATH',      plugin_dir_path( __FILE__ ) );
 define( 'SPF_URL',       plugin_dir_url( __FILE__ ) );
 define( 'SPF_ASSETS',    SPF_URL  . 'assets/' );
 
+// Plugin Update Checker — آپدیت از GitHub
+require_once SPF_PATH . 'plugin-update-checker/plugin-update-checker.php';
+
+add_action( 'plugins_loaded', 'spf_init_update_checker', 5 );
+function spf_init_update_checker() {
+    $update_checker = \YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
+        'https://github.com/ehsan7mn/Smart-Product-Filter/',
+        __FILE__,
+        'smart-product-filter'
+    );
+
+    $update_checker->getVcsApi()->enableReleaseAssets();
+
+    $token = apply_filters(
+        'spf_github_update_token',
+        defined( 'SPF_GITHUB_TOKEN' ) ? SPF_GITHUB_TOKEN : ''
+    );
+
+    if ( $token ) {
+        $update_checker->setAuthentication( $token );
+    }
+}
+
 // Check WooCommerce is active
 add_action( 'plugins_loaded', 'spf_init' );
 function spf_init() {

@@ -8,6 +8,11 @@
 
 ## تغییرات
 
+### 1.2.6
+- انتقال منوی تنظیمات به زیرمنوی **افزونه پرشین تیک** (`persiantik_shop_themes`)
+- افزودن ۱۰ نوع لودینگ قابل انتخاب برای آرشیو محصولات
+- افزودن **Plugin Update Checker** برای آپدیت خودکار از GitHub Releases
+
 ### 1.2.5
 - **رفع باگ:** `filter.js` مقدار `min_price`/`max_price` رو از همون ابتدا (با کمینه/بیشینه‌ی کل سایت) پر می‌کرد و توی *هر* درخواست AJAX (حتی صرف سورت یا فیلتر تاکسونومی، بدون دست زدن کاربر به اسلایدر قیمت) ارسال می‌کرد. چون سمت PHP با `BETWEEN` روی `_price` چک می‌شه، محصولاتی که اصلاً `_price` ندارن (مثلاً محصولات «تماس بگیرید») از نتیجه حذف می‌شدن. الان `min_price`/`max_price` فقط وقتی توی درخواست فرستاده می‌شه که کاربر واقعاً بازه رو از پیش‌فرض تغییر داده باشه.
 
@@ -127,6 +132,33 @@ smart-product-filter/
 - ترم‌های مجاز ادمین فقط توی سایدبار فیلتر میشن (نه روی query اصلی)
 - `include_children` روی false — زیرمجموعه‌ها جداگانه انتخاب میشن
 - ناموجودها همیشه آخر لیست
+
+---
+
+## آپدیت خودکار از GitHub
+
+این افزونه با [Plugin Update Checker](https://github.com/YahnisElsts/plugin-update-checker) از **GitHub Releases** آپدیت می‌شود.
+
+چون ریپازیتوری خصوصی است، قبل از استفاده این خط را به `wp-config.php` اضافه کنید:
+
+```php
+define( 'SPF_GITHUB_TOKEN', 'ghp_xxxxxxxxxxxxxxxxxxxx' );
+```
+
+توکن GitHub باید دسترسی **repo** (خواندن) داشته باشد. می‌توانید از فیلتر هم استفاده کنید:
+
+```php
+add_filter( 'spf_github_update_token', fn() => 'your-token' );
+```
+
+### ساخت ریلیز جدید
+
+```bash
+bash scripts/build-release-zip.sh
+gh release create v1.2.7 smart-product-filter-1.2.7.zip --title "v1.2.7" --notes "..."
+```
+
+نسخه را در `smart-product-filter.php` و `readme.txt` بالا ببرید، سپس zip را به Release ضمیمه کنید.
 
 ---
 
