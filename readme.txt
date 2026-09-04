@@ -4,7 +4,7 @@ Tags: woocommerce, filter, products, ajax
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.2.6
+Stable tag: 1.2.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -15,6 +15,9 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 افزونه فیلتر محصولات ووکامرس با AJAX برای فروشگاه‌های فارسی. شامل مرتب‌سازی، فیلتر تاکسونومی، ویژگی‌های محصول، بازه قیمت و لودینگ قابل انتخاب در آرشیو محصولات.
 
 == Changelog ==
+
+= 1.2.7 =
+* تغییر نام ثابت توکن GitHub از SPF_GITHUB_TOKEN به PTIK_GITHUB_TOKEN
 
 = 1.2.6 =
 * انتقال منوی تنظیمات به زیرمنوی افزونه پرشین تیک (persiantik_shop_themes)
