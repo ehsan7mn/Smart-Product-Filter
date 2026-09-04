@@ -26,6 +26,7 @@ jQuery(function ($) {
 
     // init فیلترها از URL
     initFromUrl();
+    ensureLoaderOverlay();
 
     // ========== Price Slider ==========
     if ($('#spf-price-slider').length) {
@@ -197,10 +198,9 @@ jQuery(function ($) {
 
     function loadProducts() {
         const $container = $('#spf-products-container');
-        const $loader    = $('#spf-loader');
+        const $wrap      = ensureLoaderOverlay();
 
-        $container.css({ opacity: 0.4, 'pointer-events': 'none' });
-        $loader.show();
+        $wrap.addClass('is-loading');
         scrollToProducts();
 
         $.ajax({
@@ -218,10 +218,33 @@ jQuery(function ($) {
                 console.error('SPF: خطا در دریافت محصولات');
             },
             complete: function () {
-                $container.css({ opacity: 1, 'pointer-events': 'auto' });
-                $loader.hide();
+                $wrap.removeClass('is-loading');
             },
         });
+    }
+
+    function ensureLoaderOverlay() {
+        const $container = $('#spf-products-container');
+        if (!$container.length) {
+            return $();
+        }
+
+        let $wrap = $container.closest('#spf-products-wrap');
+        if (!$wrap.length) {
+            $container.wrap('<div id="spf-products-wrap" class="spf-products-wrap"></div>');
+            $wrap = $container.closest('#spf-products-wrap');
+        }
+
+        if (!$wrap.find('#spf-loader-overlay').length) {
+            const loaderType = spfData.loader_type || 1;
+            $wrap.prepend(
+                '<div id="spf-loader-overlay" class="spf-loader-overlay spf-loader-type-' + loaderType + '" aria-hidden="true" role="status">' +
+                    '<div class="spf-loader"></div>' +
+                '</div>'
+            );
+        }
+
+        return $wrap;
     }
 
     function buildRequestData() {

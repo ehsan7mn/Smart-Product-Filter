@@ -52,7 +52,10 @@ class SPF_Filter_Frontend {
         wp_enqueue_style( 'jquery-ui', 'https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css', [], '1.13.2' );
 
         wp_enqueue_style( 'spf-style', SPF_ASSETS . 'css/filter.css', [], SPF_VERSION );
+        wp_enqueue_style( 'spf-loaders', SPF_ASSETS . 'css/loaders.css', [], SPF_VERSION );
         wp_enqueue_script( 'spf-filter', SPF_ASSETS . 'js/filter.js', [ 'jquery', 'jquery-ui-slider' ], SPF_VERSION, true );
+
+        $loader_type = SPF_Loaders::sanitize( $options['loader_type'] ?? 1 );
 
         // پاس دادن داده به JS
         wp_localize_script( 'spf-filter', 'spfData', [
@@ -67,6 +70,7 @@ class SPF_Filter_Frontend {
             'current_tax'     => $context['taxonomy'],
             'current_term'    => $context['term_slug'],
             'current_term_id' => $context['term_id'],
+            'loader_type'     => $loader_type,
         ]);
     }
 

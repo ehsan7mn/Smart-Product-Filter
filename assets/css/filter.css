@@ -143,13 +143,41 @@
     justify-content: center;
 }
 
-/* ========== Loader ========== */
-#spf-loader {
+/* ========== Products Loading Overlay ========== */
+.spf-products-wrap {
+    position: relative;
+}
+
+.spf-loader-overlay {
     display: none;
-    text-align: center;
-    padding: 20px;
-    color: #999;
-    font-size: 13px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    padding-top: 75px;
+    justify-content: center;
+    align-items: flex-start;
+    pointer-events: none;
+}
+
+.spf-products-wrap.is-loading #spf-products-container {
+    opacity: 0.4;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+}
+
+.spf-products-wrap.is-loading .spf-loader-overlay {
+    display: flex;
+}
+
+.spf-loader-overlay .spf-loader {
+    display: block;
+}
+
+/* Legacy loader element (backward compatibility) */
+#spf-loader {
+    display: none !important;
 }
 
 /* ========== Sidebar ========== */

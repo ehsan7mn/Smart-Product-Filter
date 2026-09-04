@@ -3,7 +3,7 @@
  * Plugin Name: Smart Product Filter
  * Plugin URI:  https://persiantik.net
  * Description: فیلتر محصولات ووکامرس با AJAX - شامل مرتب‌سازی، فیلتر تاکسونومی، ویژگی‌ها و قیمت
- * Version:     1.2.5
+ * Version:     1.2.6
  * Author:      احسان مهدی‌زاده
  * Author URI:  https://persiantik.net
  * Text Domain: smart-product-filter
@@ -16,7 +16,7 @@
 defined( 'ABSPATH' ) || exit;
 
 // Constants
-define( 'SPF_VERSION',   '1.2.5' );
+define( 'SPF_VERSION',   '1.2.6' );
 define( 'SPF_FILE',      __FILE__ );
 define( 'SPF_PATH',      plugin_dir_path( __FILE__ ) );
 define( 'SPF_URL',       plugin_dir_url( __FILE__ ) );
@@ -32,6 +32,7 @@ function spf_init() {
         return;
     }
 
+    require_once SPF_PATH . 'includes/class-loaders.php';
     require_once SPF_PATH . 'includes/class-admin-settings.php';
     require_once SPF_PATH . 'includes/class-filter-query.php';
     require_once SPF_PATH . 'includes/class-filter-ajax.php';

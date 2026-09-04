@@ -11,7 +11,7 @@ class SPF_Admin_Settings {
 
     public static function add_menu() {
         add_submenu_page(
-            'woocommerce',
+            'persiantik_shop_themes',
             'تنظیمات فیلتر محصولات',
             'فیلتر محصولات',
             'manage_options',
@@ -56,6 +56,9 @@ class SPF_Admin_Settings {
 
         // نمایش فیلتر «فقط آیتم‌های ویژه»
         $clean['show_featured_filter'] = ! empty( $input['show_featured_filter'] ) ? 1 : 0;
+
+        // نوع لودینگ آرشیو محصولات
+        $clean['loader_type'] = SPF_Loaders::sanitize( $input['loader_type'] ?? 1 );
 
         // تاکسونومی‌هایی که نباید توی صفحه آرشیو خودشون نمایش داده بشن
         $clean['hide_on_own_archive'] = isset( $input['hide_on_own_archive'] ) && is_array( $input['hide_on_own_archive'] )
@@ -120,13 +123,17 @@ class SPF_Admin_Settings {
             'show_sale_filter'     => 0,
             'show_featured_filter' => 0,
             'hide_on_own_archive'  => [],
+            'loader_type'          => 1,
         ];
         return wp_parse_args( get_option( 'spf_options', [] ), $defaults );
     }
 
     public static function enqueue_assets( $hook ) {
-        if ( $hook !== 'woocommerce_page_smart-product-filter' ) return;
-        wp_enqueue_style( 'spf-admin', SPF_ASSETS . 'admin/admin.css', [], SPF_VERSION );
+        if ( strpos( $hook, 'smart-product-filter' ) === false ) {
+            return;
+        }
+        wp_enqueue_style( 'spf-loaders', SPF_ASSETS . 'css/loaders.css', [], SPF_VERSION );
+        wp_enqueue_style( 'spf-admin', SPF_ASSETS . 'admin/admin.css', [ 'spf-loaders' ], SPF_VERSION );
     }
 
     public static function render_page() {
@@ -367,6 +374,30 @@ class SPF_Admin_Settings {
                         </div>
                     </div>
 
+                    <!-- لودینگ آرشیو محصولات -->
+                    <div class="spf-admin-card">
+                        <h2>⏳ لودینگ آرشیو محصولات</h2>
+                        <p class="description">هنگام فیلتر، مرتب‌سازی یا صفحه‌بندی، این انیمیشن بالای لیست محصولات نمایش داده می‌شود.</p>
+                        <div class="spf-loader-picker">
+                            <?php
+                            $selected_loader = (int) ( $options['loader_type'] ?? 1 );
+                            foreach ( SPF_Loaders::get_all() as $id => $loader ) :
+                            ?>
+                            <label class="spf-loader-option <?php echo $selected_loader === $id ? 'is-selected' : ''; ?>">
+                                <input type="radio"
+                                    name="spf_options[loader_type]"
+                                    value="<?php echo esc_attr( $id ); ?>"
+                                    <?php checked( $selected_loader, $id ); ?>
+                                >
+                                <span class="spf-loader-option-label"><?php echo esc_html( $loader['label'] ); ?></span>
+                                <span class="spf-loader-option-preview spf-admin-loader-preview spf-loader-type-<?php echo esc_attr( $id ); ?>">
+                                    <span class="spf-loader" aria-hidden="true"></span>
+                                </span>
+                            </label>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+
                 </div>
 
                 <?php submit_button( 'ذخیره تنظیمات' ); ?>
@@ -401,6 +432,12 @@ class SPF_Admin_Settings {
                     if(!$(this).is(':checked')){
                         $group.find('.spf-select-all-terms').prop('checked', false);
                     }
+                });
+
+                // انتخاب لودینگ
+                $(document).on('change', '.spf-loader-option input[type="radio"]', function(){
+                    $('.spf-loader-option').removeClass('is-selected');
+                    $(this).closest('.spf-loader-option').addClass('is-selected');
                 });
             });
             </script>

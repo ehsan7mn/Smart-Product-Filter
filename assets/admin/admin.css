@@ -98,3 +98,60 @@
     color: #777;
     cursor: pointer;
 }
+
+/* Loader picker */
+.spf-loader-picker {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.spf-loader-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 12px;
+    border: 2px solid #e8e8e8;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+    background: #fff;
+}
+
+.spf-loader-option:hover {
+    border-color: #c5c5c5;
+}
+
+.spf-loader-option.is-selected {
+    border-color: #2271b1;
+    background: #f0f6fc;
+}
+
+.spf-loader-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.spf-loader-option-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+}
+
+.spf-loader-option-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px;
+    width: 100%;
+    overflow: hidden;
+}
+
+.spf-loader-option-preview .spf-loader {
+    transform: scale(0.75);
+    transform-origin: center;
+}
