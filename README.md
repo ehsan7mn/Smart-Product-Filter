@@ -142,7 +142,7 @@ smart-product-filter/
 چون ریپازیتوری خصوصی است، قبل از استفاده این خط را به `wp-config.php` اضافه کنید:
 
 ```php
-define( 'SPF_GITHUB_TOKEN', 'ghp_xxxxxxxxxxxxxxxxxxxx' );
+define( 'PTIK_GITHUB_TOKEN', 'ghp_xxxxxxxxxxxxxxxxxxxx' );
 ```
 
 توکن GitHub باید دسترسی **repo** (خواندن) داشته باشد. می‌توانید از فیلتر هم استفاده کنید:

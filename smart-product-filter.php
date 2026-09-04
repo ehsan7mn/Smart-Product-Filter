@@ -37,7 +37,7 @@ function spf_init_update_checker() {
 
     $token = apply_filters(
         'spf_github_update_token',
-        defined( 'SPF_GITHUB_TOKEN' ) ? SPF_GITHUB_TOKEN : ''
+        defined( 'PTIK_GITHUB_TOKEN' ) ? PTIK_GITHUB_TOKEN : ''
     );
 
     if ( $token ) {
