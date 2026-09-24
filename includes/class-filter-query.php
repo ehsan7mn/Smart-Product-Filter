@@ -5,6 +5,7 @@ class SPF_Filter_Query {
 
     public static function init() {
         add_filter( 'posts_clauses', [ __CLASS__, 'apply_product_sort_clauses' ], 20, 2 );
+        add_action( 'woocommerce_product_query', [ __CLASS__, 'prepare_archive_product_query' ], 30 );
     }
 
     /**
@@ -83,6 +84,43 @@ class SPF_Filter_Query {
         }
 
         return $args;
+    }
+
+    /**
+     * هم‌تراز کردن query اولیه آرشیو با منطق AJAX (مرتب‌سازی + ترتیب موجود/قیمت)
+     */
+    public static function prepare_archive_product_query( $query ) {
+        if ( is_admin() || ! $query instanceof WP_Query ) {
+            return;
+        }
+
+        if ( ! self::is_product_archive_context() ) {
+            return;
+        }
+
+        $query->set( 'spf_availability_sort', true );
+
+        $options  = SPF_Admin_Settings::get_options();
+        $per_page = ! empty( $options['per_page'] ) ? absint( $options['per_page'] ) : 12;
+        $query->set( 'posts_per_page', $per_page );
+
+        $orderby = 'date';
+        if ( ! empty( $_GET['orderby'] ) ) {
+            $orderby = sanitize_text_field( wp_unslash( $_GET['orderby'] ) );
+        }
+
+        self::apply_orderby_to_query( $query, $orderby );
+    }
+
+    private static function apply_orderby_to_query( $query, $orderby ) {
+        $args = self::get_orderby_args( $orderby );
+        foreach ( $args as $key => $value ) {
+            $query->set( $key, $value );
+        }
+    }
+
+    private static function is_product_archive_context() {
+        return is_shop() || is_product_category() || is_product_tag() || is_tax();
     }
 
     /**
@@ -180,7 +218,7 @@ private static function get_tax_query( $params ) {
             return false;
         }
 
-        return is_shop() || is_product_category() || is_product_tag() || is_tax();
+        return self::is_product_archive_context();
     }
 
     /**
