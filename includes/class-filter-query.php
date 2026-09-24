@@ -3,6 +3,10 @@ defined( 'ABSPATH' ) || exit;
 
 class SPF_Filter_Query {
 
+    public static function init() {
+        add_filter( 'posts_clauses', [ __CLASS__, 'apply_product_sort_clauses' ], 20, 2 );
+    }
+
     /**
      * ساخت آرگومان‌های WP_Query بر اساس فیلترهای دریافتی
      */
@@ -17,10 +21,11 @@ class SPF_Filter_Query {
 
         // آرگومان پایه
         $args = [
-            'post_type'      => 'product',
-            'post_status'    => 'publish',
-            'posts_per_page' => $per_page,
-            'paged'          => $paged,
+            'post_type'               => 'product',
+            'post_status'             => 'publish',
+            'posts_per_page'          => $per_page,
+            'paged'                   => $paged,
+            'spf_availability_sort'   => true,
         ];
 
         // مرتب‌سازی
@@ -143,22 +148,66 @@ private static function get_tax_query( $params ) {
 }
 
     /**
-     * اجرای query با مرتب‌سازی ناموجودها به آخر
+     * اجرای query فیلتر AJAX
      */
     public static function run( $args ) {
-        add_filter( 'posts_clauses', [ __CLASS__, 'order_out_of_stock_last' ] );
-        $query = new WP_Query( $args );
-        remove_filter( 'posts_clauses', [ __CLASS__, 'order_out_of_stock_last' ] );
-        return $query;
+        if ( ! isset( $args['spf_availability_sort'] ) ) {
+            $args['spf_availability_sort'] = true;
+        }
+        return new WP_Query( $args );
     }
 
     /**
-     * فیلتر SQL برای آوردن ناموجودها آخر
+     * آیا ترتیب موجود/قیمت‌دار/ناموجود روی این query اعمال شود؟
      */
-    public static function order_out_of_stock_last( $clauses ) {
+    private static function should_apply_product_sort( $query ) {
+        if ( ! $query instanceof WP_Query ) {
+            return false;
+        }
+
+        if ( $query->get( 'spf_availability_sort' ) ) {
+            return true;
+        }
+
+        if ( ! $query->is_main_query() ) {
+            return false;
+        }
+
+        $post_type = $query->get( 'post_type' );
+        $is_product_query = ( 'product' === $post_type )
+            || ( is_array( $post_type ) && in_array( 'product', $post_type, true ) );
+        if ( ! $is_product_query ) {
+            return false;
+        }
+
+        return is_shop() || is_product_category() || is_product_tag() || is_tax();
+    }
+
+    /**
+     * ترتیب ثابت: موجود با قیمت → موجود بدون قیمت (تماس بگیرید) → ناموجود
+     */
+    public static function apply_product_sort_clauses( $clauses, $query ) {
+        if ( ! self::should_apply_product_sort( $query ) ) {
+            return $clauses;
+        }
+
         global $wpdb;
-        $clauses['join']    .= " LEFT JOIN {$wpdb->postmeta} AS spf_stock ON ({$wpdb->posts}.ID = spf_stock.post_id AND spf_stock.meta_key = '_stock_status')";
-        $clauses['orderby']  = "CASE WHEN spf_stock.meta_value = 'instock' THEN 0 ELSE 1 END ASC, " . $clauses['orderby'];
+
+        if ( strpos( $clauses['join'], 'spf_stock' ) === false ) {
+            $clauses['join'] .= " LEFT JOIN {$wpdb->postmeta} AS spf_stock ON ({$wpdb->posts}.ID = spf_stock.post_id AND spf_stock.meta_key = '_stock_status')";
+        }
+        if ( strpos( $clauses['join'], 'spf_price' ) === false ) {
+            $clauses['join'] .= " LEFT JOIN {$wpdb->postmeta} AS spf_price ON ({$wpdb->posts}.ID = spf_price.post_id AND spf_price.meta_key = '_price')";
+        }
+
+        $priority = "CASE
+            WHEN COALESCE(spf_stock.meta_value, 'outofstock') <> 'instock' THEN 2
+            WHEN spf_price.meta_value IS NOT NULL AND spf_price.meta_value <> '' AND CAST(spf_price.meta_value AS DECIMAL(10,4)) > 0 THEN 0
+            ELSE 1
+        END ASC";
+
+        $clauses['orderby'] = $priority . ', ' . $clauses['orderby'];
+
         return $clauses;
     }
 
