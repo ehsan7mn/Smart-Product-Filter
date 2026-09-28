@@ -47,13 +47,19 @@ class SPF_Filter_Frontend {
         $price_range = SPF_Filter_Query::get_price_range();
         $context     = self::get_current_archive_context();
 
-        // jQuery UI Slider برای فیلتر قیمت
-        wp_enqueue_script( 'jquery-ui-slider' );
-        wp_enqueue_style( 'jquery-ui', 'https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css', [], '1.13.2' );
+        // اسلایدر قیمت — jquery-ui-slider از هسته وردپرس (بدون CDN)
+        if ( ! empty( $options['show_price_filter'] ) ) {
+            wp_enqueue_script( 'jquery-ui-slider' );
+        }
 
         wp_enqueue_style( 'spf-style', SPF_ASSETS . 'css/filter.css', [], SPF_VERSION );
         wp_enqueue_style( 'spf-loaders', SPF_ASSETS . 'css/loaders.css', [], SPF_VERSION );
-        wp_enqueue_script( 'spf-filter', SPF_ASSETS . 'js/filter.js', [ 'jquery', 'jquery-ui-slider' ], SPF_VERSION, true );
+
+        $script_deps = [ 'jquery' ];
+        if ( ! empty( $options['show_price_filter'] ) ) {
+            $script_deps[] = 'jquery-ui-slider';
+        }
+        wp_enqueue_script( 'spf-filter', SPF_ASSETS . 'js/filter.js', $script_deps, SPF_VERSION, true );
 
         $loader_type = SPF_Loaders::sanitize( $options['loader_type'] ?? 1 );
 
